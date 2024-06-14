@@ -9,53 +9,35 @@ redirect_if_logged_in();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $gender = $_POST['gender'];
-    $dob = $_POST['dob'];
-    $user_type = 'Regular';
+    $customer_name = $_POST['username'];
+    $customer_email = $_POST['email'];
+    $customer_pass = $_POST['password'];
+    $user_role = 'user'; // Assign a default user role, you can modify this as needed
 
     // Initialize an array to store validation errors
     $errors = [];
 
-    // Validate inputs
-    if (empty($username) || empty($email) || empty($password) || empty($gender) || empty($dob)) {
-        $errors[] = "Please fill in all fields.";
-    }
+    // Validate inputs (you can add validation logic here if needed)
 
-    // Validate email format
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Invalid email format.";
-    }
+    // Hash the password
+    $hashed_password = password_hash($customer_pass, PASSWORD_DEFAULT);
 
-    // Perform password strength validation using regex
-    if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[a-zA-Z\d\W_]{8,}$/", $password)) {
-        $errors[] = "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character.";
-    }
+    // Insert data into the database
+    $sql = "INSERT INTO customer (customer_name, customer_email, customer_pass, user_role)
+            VALUES ('$customer_name', '$customer_email', '$hashed_password', '$user_role')";
 
-    // Check if there are any validation errors
-    if (empty($errors)) {
-        // Hash password
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        // Insert user into database
-        $stmt = $conn->prepare("INSERT INTO users (username, email, passwd, gender, date_of_birth, user_type) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", $username, $email, $hashed_password, $gender, $dob, $user_type);
-
-        if ($stmt->execute()) {
-            $_SESSION['success'] = "Registration successful. You can now log in.";
-            header("Location: login.php");
-            exit();
-        } else {
-            $_SESSION['error'] = "Error occurred. Please try again later.";
-            header("Location: register.php");
-            exit();
-        }
-    } else {
-        // If there are validation errors, store them in the session and redirect back to register.php
-        $_SESSION['errors'] = $errors;
-        //header("Location: register.php");
+    if (mysqli_query($con, $sql)) {
+        echo "registration successful";
+        // Redirect to success page or do something else
+        header("Location: ../userdashboard/signin.php");
         exit();
+    } else {
+        // Insert failed
+        // Handle the error as needed
+        echo "Error: " . $sql . "<br>" . mysqli_error($con);
     }
+
+    // Close database connection
+    mysqli_close($con);
 }
+?>
