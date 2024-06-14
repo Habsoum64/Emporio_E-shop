@@ -27,9 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             VALUES ('$customer_name', '$customer_email', '$hashed_password', '$user_role')";
 
     if (mysqli_query($con, $sql)) {
-        echo "registration successful";
-        // Redirect to success page or do something else
-        header("Location: ../userdashboard/signin.php");
+        echo '<script>
+        alert ("Registration successful");
+        window.location = "../user_dashboard/signin.html";
+        </script>';
+    
         exit();
     } else {
         // Insert failed
