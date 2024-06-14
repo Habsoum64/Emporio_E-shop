@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Redirect to the user dashboard
             echo '<script>
             alert("Login successful");
-            window.location = "../user_dashboard/index.php";
+            window.location = "../index.html";
             </script>';
             exit();
         } else {
