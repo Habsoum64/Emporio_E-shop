@@ -57,6 +57,19 @@ function update_order_status($order_id, $status) {
     $stmt->execute();
 }
 
+function fetch_products() {
+    global $conn;
+    $sql = "SELECT * FROM products";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $products = [];
+    while ($row = $result->fetch_assoc()) {
+        $products[] = $row;
+    }
+    echo json_encode($products);
+}
+
 if (isset($_POST['action'])) {
     switch ($_POST['action']) {
         case 'fetch_user_data':
@@ -74,7 +87,12 @@ if (isset($_POST['action'])) {
         case 'update_order_status':
             update_order_status($_POST['order_id'], $_POST['status']);
             break;
+        case 'fetch_products':
+            fetch_products();
+            break;
     }
 }
 
 $conn->close();
+
+?>
