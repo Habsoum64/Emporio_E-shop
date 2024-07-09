@@ -62,31 +62,12 @@
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="index.html" class="nav-item nav-link active"><i
-                            class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                                class="fa fa-laptop me-2"></i>Elements</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="button.html" class="dropdown-item">Buttons</a>
-                            <a href="typography.html" class="dropdown-item">Typography</a>
-                            <a href="element.html" class="dropdown-item">Other Elements</a>
-                        </div>
-                    </div>
-                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
-                    <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
-                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
-                    <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                                class="far fa-file-alt me-2"></i>Pages</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="signin.html" class="dropdown-item">Sign In</a>
-                            <a href="signup.html" class="dropdown-item">Sign Up</a>
-                            <a href="404.html" class="dropdown-item">404 Error</a>
-                            <a href="blank.html" class="dropdown-item">Blank Page</a>
-                        </div>
-                    </div>
+                    <a href="home.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Dashboard</a>
+                    <a href="manage_users.html" class="nav-item nav-link active"><i class="fa fa-user -alt me-2"></i>Users</a>
+                    <a href="manage_products.html" class="nav-item nav-link"><i
+                            class="fa fa-table me-2"></i>Products</a>
+                    <a href="manage_orders.html" class="nav-item nav-link"><i
+                            class="fa fa-tachometer me-2"></i>orders</a>
                 </div>
             </nav>
         </div>
@@ -155,11 +136,11 @@
             <!-- Navbar End -->
 
 
-            <!-- Recent Sales Start -->
+            <!-- Users Table Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-light text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Orders</h6>
+                        <h6 class="mb-0">Users</h6>
                         <a href="">Show All</a>
                     </div>
 
@@ -167,22 +148,21 @@
                         <table class="table text-start align-middle table-bordered table-hover mb-0">
                             <thead>
                                 <tr class="text-dark">
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Invoice</th>
-                                    <th scope="col">Customer</th>
-                                    <th scope="col">Amount</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Role</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
 
-                            <tbody id="orders">
-                            </tbody>
+                            <tbody id="users"></tbody>
+
                         </table>
                     </div>
                 </div>
             </div>
-            <!-- Orders End -->
+            <!-- Users Table End -->
 
 
             <!-- Footer Start -->
@@ -192,6 +172,7 @@
                         <div class="col-12 col-sm-6 text-center text-sm-start">
                             &copy; <a href="#">Your Site Name</a>, All Right Reserved.
                         </div>
+
                         <div class="col-12 col-sm-6 text-center text-sm-end">
                             <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                             Designed By <a href="https://htmlcodex.com">HTML Codex</a>
@@ -222,40 +203,36 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script>
-        function fetchOrders() {
+        function fetchUsers() {
             $.ajax({
                 url: 'admin_actions.php',
                 method: 'POST',
-                data: { action: 'fetch_orders' },
+                data: { action: 'fetch_users' },
                 success: function (response) {
-                    const orders = JSON.parse(response);
-                    const ordersTable = document.getElementById('orders');
-                    ordersTable.innerHTML = '';
-                    orders.forEach(order => {
-                        ordersTable.innerHTML += `
+                    const users = JSON.parse(response);
+                    const usersTable = document.getElementById('users');
+                    usersTable.innerHTML = '';
+                    users.forEach(user => {
+                        usersTable.innerHTML += `
                             <tr>
-                                <td>${order.order_id}</td>
-                                <td>${order.customer_id}</td>
-                                <td>${order.invoice_no}</td>
-                                <td>${order.order_date}</td>
-                                <td>${order.order_status}</td>
-                                <td>
-                                    <a class='btn btn-sm btn-primary' href='#'>Confirm</a>
-                                    <a class='btn btn-sm btn-primary' href='#'>Cancel</a>
-                                </td>
+                                <td>${user.id}</td>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td>${user.user_role}</td>
+                                <td><a class='btn btn-sm btn-primary' href='#'>Delete</a></td>
                             </tr>
                         `;
                     });
                 },
                 error: function (xhr, status, error) {
-                    console.error('Error fetching orders:', error);
-                    alert('Failed to fetch orders.');
+                    console.error('Error fetching users:', error);
+                    alert('Failed to fetch users.');
                 }
             });
         }
 
         // Fetch users when the page loads
-        document.addEventListener('DOMContentLoaded', fetchOrders);
+        document.addEventListener('DOMContentLoaded', fetchUsers);
     </script>
 </body>
 
