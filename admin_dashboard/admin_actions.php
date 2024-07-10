@@ -4,7 +4,7 @@ include "../settings/connection.php";
 
 function fetch_user_data($user_id) {
     global $conn;
-    $sql = "SELECT * FROM users WHERE user_id = ?";
+    $sql = "SELECT * FROM users WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
@@ -28,14 +28,6 @@ function fetch_users() {
     echo json_encode($users);
 }
 
-function delete_user($user_id) {
-    global $conn;
-    $sql = "DELETE FROM users WHERE user_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-}
-
 function fetch_orders() {
     global $conn;
     $sql = "SELECT * FROM orders";
@@ -47,14 +39,6 @@ function fetch_orders() {
         $orders[] = $row;
     }
     echo json_encode($orders);
-}
-
-function update_order_status($order_id, $status) {
-    global $conn;
-    $sql = "UPDATE orders SET order_status = ? WHERE order_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $status, $order_id);
-    $stmt->execute();
 }
 
 function fetch_products() {
@@ -69,6 +53,23 @@ function fetch_products() {
     }
     echo json_encode($products);
 }
+
+function delete_user($user_id) {
+    global $conn;
+    $sql = "DELETE FROM users WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+}
+
+function update_order_status($order_id, $status) {
+    global $conn;
+    $sql = "UPDATE orders SET order_status = ? WHERE order_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $status, $order_id);
+    $stmt->execute();
+}
+
 
 if (isset($_POST['action'])) {
     switch ($_POST['action']) {
@@ -94,5 +95,3 @@ if (isset($_POST['action'])) {
 }
 
 $conn->close();
-
-?>

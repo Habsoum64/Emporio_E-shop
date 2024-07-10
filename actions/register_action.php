@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $customer_name = $_POST['username'];
     $customer_email = $_POST['email'];
     $customer_pass = $_POST['password'];
-    $user_role = 'user'; // Assign a default user role, you can modify this as needed
+    $user_role = 2; // Assign a default user role, you can modify this as needed
 
     // Initialize an array to store validation errors
     $errors = [];
@@ -23,10 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $hashed_password = password_hash($customer_pass, PASSWORD_DEFAULT);
 
     // Insert data into the database
-    $sql = "INSERT INTO customer (customer_name, customer_email, customer_pass, user_role)
+    $sql = "INSERT INTO users (name, email, password, user_role)
             VALUES ('$customer_name', '$customer_email', '$hashed_password', '$user_role')";
 
-    if (mysqli_query($con, $sql)) {
+    if (mysqli_query($conn, $sql)) {
         echo '<script>
         alert ("Registration successful");
         window.location = "../user_dashboard/signin.html";
@@ -36,10 +36,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         // Insert failed
         // Handle the error as needed
-        echo "Error: " . $sql . "<br>" . mysqli_error($con);
+        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
     }
 
     // Close database connection
-    mysqli_close($con);
+    mysqli_close($conn);
 }
 ?>

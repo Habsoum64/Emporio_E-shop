@@ -18,18 +18,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate inputs (you can add validation logic here if needed)
 
     // Check if email exists in the database
-    $sql = "SELECT * FROM customer WHERE customer_email = '$customer_email'";
-    $result = mysqli_query($con, $sql);
+    $sql = "SELECT * FROM users WHERE email = '$customer_email'";
+    $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) == 1) {
         $row = mysqli_fetch_assoc($result);
         // Verify the password
-        if (password_verify($customer_pass, $row['customer_pass'])) {
+        if (password_verify($customer_pass, $row['password'])) {
             // Start the session
             session_start();
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['user_role'] = $row['user_role'];
-            $_SESSION['customer_name'] = $row['customer_name'];
+            $_SESSION['session_user_id'] = $row['id'];
+            $_SESSION['session_user_role'] = $row['user_role'];
+            $_SESSION['session_name'] = $row['name'];
 
             // Redirect to the user dashboard
             echo '<script>
@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Close database connection
-    mysqli_close($con);
+    mysqli_close($conn);
 }
 ?>
 

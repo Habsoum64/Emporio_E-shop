@@ -1,16 +1,13 @@
 <?php
-$servername = "localhost:3308";
+$host = "localhost";
 $username = "root";
 $password = "";
 $database = "emporio";
+
 // Create connection
-$con = mysqli_connect($servername, $username, $password, $database);
+$conn = new mysqli($host, $username, $password, $database, 3312);
 
 // Check connection
-if (!$con) {
-    die("Connection failed: " . mysqli_connect_error());
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
-else {
-    echo "connection successful";
-} 
-?>
