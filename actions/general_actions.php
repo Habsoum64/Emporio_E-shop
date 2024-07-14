@@ -12,20 +12,19 @@ function fetch_user_data($user_id) {
     return $result->fetch_assoc();
 }
 
-function fetch_users() {
+function fetch_categories() {
     global $conn;
-    $sql = "SELECT * FROM users";
+    $categories = [];
+
+    // Fetching the categories
+    $sql = "SELECT DISTINCT product_cat FROM products ";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $result = $stmt->get_result();
-    
-    $users = [];
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $users[] = $row;
-        }
+    while ($row = $result->fetch_assoc()) {
+        $categories[] = $row;
     }
-    echo json_encode($users);
+    echo json_encode($categories);
 }
 
 function fetch_orders() {
@@ -41,10 +40,30 @@ function fetch_orders() {
     echo json_encode($orders);
 }
 
-function fetch_products() {
+function fetch_products($category, $number, $sort) {
     global $conn;
-    $sql = "SELECT * FROM products";
+    $sql = "SELECT * FROM products, categories";
+    
+    if ($category != "all") {
+        $sql .= " WHERE categories.cat_id = ?";
+    } 
+    
+    $filter = strval($sort);
+
+    if ($filter = "nothing") {
+        $sql .= " ORDER BY RAND()";
+    } elseif ($filter = "price high") {
+        $sql .= " ORDER BY product_price DSC";
+    } elseif ($filter = "price low") {
+        $sql .= " ORDER BY product_price ASC";
+    } elseif ($filter = "name") {
+        $sql .= " ORDER BY product_name";
+    } 
+
+    $sql .= " LIMIT(?)";
+    
     $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $category, $number);
     $stmt->execute();
     $result = $stmt->get_result();
     $products = [];
@@ -54,12 +73,19 @@ function fetch_products() {
     echo json_encode($products);
 }
 
-function delete_user($user_id) {
+function search_product($pname) {
     global $conn;
-    $sql = "DELETE FROM users WHERE id = ?";
+    $sql = "SELECT * FROM products WHERE product_name LIKE '?'";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param("s", $pname);
+    
     $stmt->execute();
+    $result = $stmt->get_result();
+    $products = [];
+    while ($row = $result->fetch_assoc()) {
+        $products[] = $row;
+    }
+    echo json_encode($products);
 }
 
 function update_order_status($order_id, $status) {
@@ -76,12 +102,6 @@ if (isset($_POST['action'])) {
         case 'fetch_user_data':
             fetch_user_data($_POST['user_id']);
             break;
-        case 'fetch_users':
-            fetch_users();
-            break;
-        case 'delete_user':
-            delete_user($_POST['user_id']);
-            break;
         case 'fetch_orders':
             fetch_orders();
             break;
@@ -89,7 +109,13 @@ if (isset($_POST['action'])) {
             update_order_status($_POST['order_id'], $_POST['status']);
             break;
         case 'fetch_products':
-            fetch_products();
+            fetch_products($_POST['category'], $_POST['number'], $_POST['sort']);
+            break;
+        case 'fetch_categories':
+            fetch_categories();
+            break;
+        case 'search_product':
+            search_product($_POST['pname']);
             break;
     }
 }
