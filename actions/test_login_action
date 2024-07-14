@@ -1,0 +1,24 @@
+<?php
+// Enable error reporting
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+echo "login_action.php script reached.<br>";
+
+// Check if form data is received
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    echo "POST request detected.<br>";
+
+    // Retrieve form data
+    $email = isset($_POST['email']) ? $_POST['email'] : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+
+    // Debugging output for form data
+    echo "Form data received:<br>";
+    echo "Email: $email<br>";
+    echo "Password: $password<br>";
+} else {
+    echo "Request method is not POST.<br>";
+}
+?>

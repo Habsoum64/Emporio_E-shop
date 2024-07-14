@@ -1,58 +1,73 @@
 <?php
-// Include session.php
-include '../settings/session.php';
+// Enable error reporting
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Include connection.php
-include '../settings/connection.php';
+if (file_exists('../settings/connection.php')) {
+    include '../settings/connection.php';
+} else {
+    echo '<script>alert("Error: connection.php not found."); window.history.back();</script>';
+    exit();
+}
 
-// Redirect to homepage if already logged-in
-redirect_if_logged_in();
+// Check database connection
+if (!isset($con) || !$con) {
+    echo '<script>alert("Database connection failed: ' . mysqli_connect_error() . '"); window.history.back();</script>';
+    exit();
+}
 
+// Check if form data is received
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data
-    $customer_email = $_POST['email'];
-    $customer_pass = $_POST['password'];
+    $email = isset($_POST['email']) ? $_POST['email'] : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-    // Initialize an array to store validation errors
-    $errors = [];
-
-    // Validate inputs (you can add validation logic here if needed)
-
-    // Check if email exists in the database
-    $sql = "SELECT * FROM users WHERE email = '$customer_email'";
-    $result = mysqli_query($conn, $sql);
+    // Fetch user data from the database
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $stmt = mysqli_prepare($con, $sql);
+    if (!$stmt) {
+        echo '<script>alert("Database error: ' . mysqli_error($con) . '"); window.history.back();</script>';
+        exit();
+    }
+    mysqli_stmt_bind_param($stmt, 's', $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) == 1) {
-        $row = mysqli_fetch_assoc($result);
-        // Verify the password
-        if (password_verify($customer_pass, $row['password'])) {
+        $user = mysqli_fetch_assoc($result);
+
+        // Verify password
+        if (password_verify($password, $user['password'])) {
             // Start the session
             session_start();
-            $_SESSION['session_user_id'] = $row['id'];
-            $_SESSION['session_user_role'] = $row['user_role'];
-            $_SESSION['session_name'] = $row['name'];
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_role'] = $user['user_role'];
+            $_SESSION['first_name'] = $user['first_name'];
+            $_SESSION['last_name'] = $user['last_name'];
 
-            // Redirect to the user dashboard
-            echo '<script>
-            alert("Login successful");
-            window.location = "../index.html";
-            </script>';
+            // Redirect based on user role
+            if ($user['user_role'] == 'admin') {
+                echo '<script>window.location = "../admin_dashboard/index.html";</script>';
+            } else {
+                echo '<script>window.location = "../user_dashboard/index.html";</script>';
+            }
             exit();
         } else {
-            $errors[] = "Invalid password.";
+            echo '<script>alert("Invalid password."); window.history.back();</script>';
+            exit();
         }
     } else {
-        $errors[] = "No account found with that email.";
-    }
-
-    // If there are errors, display them
-    if (!empty($errors)) {
-        foreach ($errors as $error) {
-            echo '<script>alert("' . $error . '");</script>';
-        }
+        echo '<script>alert("No account found with that email."); window.history.back();</script>';
+        exit();
     }
 
     // Close database connection
-    mysqli_close($conn);
+    mysqli_stmt_close($stmt);
+    mysqli_close($con);
+} else {
+    echo '<script>alert("Invalid request method."); window.history.back();</script>';
+    exit();
 }
 ?>
-
