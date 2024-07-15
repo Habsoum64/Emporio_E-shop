@@ -18,3 +18,16 @@ function redirect_if_logged_in() {
 function get_user_type() {
     return isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
 }
+
+function logout_user() {
+    // Unset all session variables
+    $_SESSION = array();
+    
+    // Destroy the session
+    session_destroy();
+    
+    // Redirect to login page
+    header("Location: ../user_dashboard/signin.html");
+    exit();
+}
+?>

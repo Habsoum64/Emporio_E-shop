@@ -21,4 +21,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } else {
     echo "Request method is not POST.<br>";
 }
-?>
