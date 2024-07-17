@@ -203,51 +203,8 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script src="admin_script.js"></script>
     <script>
-        function fetchUsers() {
-            $.ajax({
-                url: 'admin_actions.php',
-                method: 'POST',
-                data: { action: 'fetch_users' },
-                success: function (response) {
-                    const users = JSON.parse(response);
-                    const usersTable = document.getElementById('users');
-                    usersTable.innerHTML = '';
-                    users.forEach(user => {
-                        usersTable.innerHTML += `
-                            <tr>
-                                <td>${user.id}</td>
-                                <td>${user.name}</td>
-                                <td>${user.email}</td>
-                                <td>${user.user_role}</td>
-                                <td><button type="button" class="btn btn-outline-primary m-2" onClick="${user.id}">Delete</button></td>
-                            </tr>
-                        `;
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching users:', error);
-                    alert('Failed to fetch users.');
-                }
-            });
-        }
-
-        function deleteUser(user_id) {
-            $.ajax({
-                url: 'admin_actions.php',
-                method: 'POST',
-                data: { action: 'delete_user', 'user_id': user_id },
-                success: function (response) {
-                    console.log("User deleted successfully.");
-                    alert('User deleted successfully.');
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching users:', error);
-                    alert('Failed to fetch users.');
-                }
-            });
-        }
-
         // Fetch users when the page loads
         document.addEventListener('DOMContentLoaded', fetchUsers);
     </script>
