@@ -1,68 +1,56 @@
 <?php
+include '../settings/connection.php';
+
 // Enable error reporting
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Include connection.php
-if (file_exists('../settings/connection.php')) {
-    include '../settings/connection.php';
-} else {
-    echo '<script>alert("Error: connection.php not found."); window.history.back();</script>';
-    exit();
-}
-
-// Check database connection
-if (!isset($con) || !$con) {
-    echo '<script>alert("Database connection failed: ' . mysqli_connect_error() . '"); window.history.back();</script>';
-    exit();
-}
-
-// Check if form data is received
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve form data
-    $first_name = isset($_POST['first_name']) ? $_POST['first_name'] : '';
-    $last_name = isset($_POST['last_name']) ? $_POST['last_name'] : '';
-    $email = isset($_POST['email']) ? $_POST['email'] : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-    $user_role = isset($_POST['user_role']) ? $_POST['user_role'] : '';
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $user_role = $_POST['user_role'];
+    $admin_code = isset($_POST['admin_code']) ? $_POST['admin_code'] : '';
 
-    // Validate inputs
-    if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($user_role)) {
-        echo '<script>alert("All fields are required."); window.history.back();</script>';
-        exit();
+    if ($user_role == 'admin') {
+        $sql = "SELECT * FROM admin_codes WHERE code = ? ORDER BY generated_at DESC LIMIT 1";
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, 's', $admin_code);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_num_rows($result) == 0) {
+            echo '<script>
+                alert("Invalid admin code.");
+                window.location.href = "../user_dashboard/signup.html";
+                </script>';
+            exit();
+        }
+
+        mysqli_stmt_close($stmt);
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo '<script>alert("Invalid email format."); window.history.back();</script>';
-        exit();
-    }
-
-    // Hash the password
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    // Insert data into the database
-    $sql = "INSERT INTO users (first_name, last_name, email, password, user_role)
-            VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO users (first_name, last_name, email, password, user_role) VALUES (?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($con, $sql);
-    if (!$stmt) {
-        echo '<script>alert("Database error: ' . mysqli_error($con) . '"); window.history.back();</script>';
-        exit();
-    }
-    mysqli_stmt_bind_param($stmt, 'sssss', $first_name, $last_name, $email, $hashed_password, $user_role);
+    mysqli_stmt_bind_param($stmt, 'sssss', $first_name, $last_name, $email, $password, $user_role);
+
     if (mysqli_stmt_execute($stmt)) {
-        echo '<script>alert("Registration successful"); window.location.href = "../user_dashboard/signin.html";</script>';
-        exit();
+        echo '<script>
+            alert("Registration successful. Please log in.");
+            window.location.href = "../user_dashboard/signin.html";
+            </script>';
     } else {
-        echo '<script>alert("Error: ' . mysqli_stmt_error($stmt) . '"); window.history.back();</script>';
-        exit();
+        echo '<script>
+            alert("Registration failed. Please try again.");
+            window.location.href = "../user_dashboard/signup.html";
+            </script>';
     }
 
-    // Close database connection
     mysqli_stmt_close($stmt);
     mysqli_close($con);
 } else {
-    echo '<script>alert("Invalid request method."); window.history.back();</script>';
-    exit();
+    echo "Form not submitted.";
 }
 ?>
