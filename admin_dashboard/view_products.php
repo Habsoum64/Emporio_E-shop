@@ -1,3 +1,7 @@
+<?php
+include '../settings/session_check.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -177,53 +181,54 @@
             </nav>
             <!-- Navbar End -->
 
-            <!-- Users Table Start -->
+
+            <!-- View Product Table Start -->
             <div class="container-fluid pt-4 px-4">
-                <div class="bg-light text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Users</h6>
-                        <a href="">Show All</a>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table text-start align-middle table-bordered table-hover mb-0">
-                            <thead>
-                                <tr class="text-dark">
-                                    <th scope="col">ID</th>
-                                    <th scope="col">First Name</th>
-                                    <th scope="col">Last Name</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="users"></tbody>
-
-                        </table>
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="mb-4">View Products</h1>
+                        <div class="mb-4">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search for products...">
+                        </div>
+                        <div class="mb-4">
+                            <select id="filterCategory" class="form-select" aria-label="Filter by Category">
+                                <option value="">Filter by Category</option>
+                                <option value="Fruits">Fruits</option>
+                                <option value="Vegetables">Vegetables</option>
+                                <option value="Herbs">Herbs</option>
+                                <option value="Leafy Greens">Leafy Greens</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <select id="filterBrand" class="form-select" aria-label="Filter by Brand">
+                                <option value="">Filter by Brand</option>
+                                <!-- Populate brands dynamically -->
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                                <thead>
+                                    <tr class="text-dark">
+                                        <th scope="col">Product ID</th>
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Brand</th>
+                                        <th scope="col">Product Name</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Keywords</th>
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody">
+                                    <!-- Product rows will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Users Table End -->
-
-            <!-- Footer Start -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="bg-light rounded-top p-4">
-                    <div class="row">
-                        <div class="col-12 col-sm-6 text-center text-sm-start">
-                            &copy; <a href="#">Your Site Name</a>, All Right Reserved.
-                        </div>
-
-                        <div class="col-12 col-sm-6 text-center text-sm-end">
-                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                            Designed By <a href="https://htmlcodex.com">HTML Codex</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Footer End -->
-        </div>
-        <!-- Content End -->
+            <!-- View Product Table End -->
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -243,66 +248,126 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script>
-        function fetchUsers() {
-            $.ajax({
-                url: '../actions/admin_actions.php',
-                method: 'POST',
-                dataType: 'json', // Ensure the response is parsed as JSON
-                data: { action: 'fetch_users' },
-                success: function (response) {
-                    console.log('Fetch Users Response:', response);
-                    if (response.success) {
-                        const users = response.users;
-                        const usersTable = document.getElementById('users');
-                        usersTable.innerHTML = '';
-                        users.forEach(user => {
-                            usersTable.innerHTML += `
-                                <tr>
-                                    <td>${user.id}</td>
-                                    <td>${user.first_name}</td>
-                                    <td>${user.last_name}</td>
-                                    <td>${user.email}</td>
-                                    <td>${user.user_role}</td>
-                                    <td><a id='delete_user' class='btn btn-sm btn-primary' onclick='deleteUser(${user.id})'>Delete</a></td>
-                                </tr>
-                            `;
-                        });
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching users:', error);
-                    alert('Failed to fetch users.');
-                }
+        let allProducts = [];
+
+        function fetchProducts() {
+            return fetch('../actions/fetch_products.php')
+                .then(response => response.json())
+                .then(data => {
+                    allProducts = data;
+                    console.log("Fetched Products:", allProducts); // Log fetched products
+                    populateTable(allProducts);
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        }
+
+        function fetchBrands() {
+            return fetch('../actions/fetch_brands.php')
+                .then(response => response.json())
+                .then(data => {
+                    const brandSelect = document.getElementById('filterBrand');
+                    brandSelect.innerHTML = '<option value="">Filter by Brand</option>'; // Clear existing options
+
+                    data.forEach(brand => {
+                        const option = document.createElement('option');
+                        option.value = brand.brand_name; // Assuming brand_name is used for filtering
+                        option.textContent = brand.brand_name;
+                        brandSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching brands:', error));
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const selectedCategory = document.getElementById('filterCategory').value.toLowerCase();
+            const selectedBrand = document.getElementById('filterBrand').value.toLowerCase();
+
+            console.log("Search Term:", searchTerm);
+            console.log("Selected Category:", selectedCategory);
+            console.log("Selected Brand:", selectedBrand);
+
+            const filteredProducts = allProducts.filter(product => {
+                const matchesSearch = product.product_title.toLowerCase().includes(searchTerm) ||
+                                    product.product_desc.toLowerCase().includes(searchTerm) ||
+                                    product.product_keywords.toLowerCase().includes(searchTerm);
+
+                const matchesCategory = selectedCategory === '' || product.category.toLowerCase() === selectedCategory;
+                const matchesBrand = selectedBrand === '' || product.brand.toLowerCase() === selectedBrand;
+
+                return matchesSearch && matchesCategory && matchesBrand;
+            });
+
+            console.log("Filtered Products:", filteredProducts);
+            populateTable(filteredProducts);
+        }
+
+        function populateTable(products) {
+            const tableBody = document.getElementById('productsTableBody');
+            tableBody.innerHTML = '';
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.product_id}</td>
+                    <td>${product.category}</td>
+                    <td>${product.brand}</td>
+                    <td>${product.product_title}</td>
+                    <td>${product.product_price}</td>
+                    <td>${product.product_desc}</td>
+                    <td>${product.product_keywords}</td>
+                    <td><img src="../uploads/${product.product_image}" alt="${product.product_title}" style="width: 50px;"></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary edit-btn" data-id="${product.product_id}">Edit</button>
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="${product.product_id}">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', handleEdit);
+            });
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', handleDelete);
             });
         }
 
-        function deleteUser(user_id) {
-            $.ajax({
-                url: '../actions/admin_actions.php',
-                method: 'POST',
-                dataType: 'json', // Ensure the response is parsed as JSON
-                data: { action: 'delete_user', user_id: user_id },
-                success: function (response) {
-                    console.log('Delete User Response:', response);
-                    if (response.success) {
-                        fetchUsers(); // Refresh the user list after deletion
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error deleting user:', error);
-                    alert('Failed to delete user.');
-                }
-            });
+        function handleEdit(event) {
+            const productId = event.target.dataset.id;
+            window.location.href = `edit_product.html?id=${productId}`;
         }
 
-        // Fetch users when the page loads
-        document.addEventListener('DOMContentLoaded', fetchUsers);
+
+        function handleDelete(event) {
+            const productId = event.target.dataset.id;
+            if (confirm('Are you sure you want to delete this product?')) {
+                fetch(`../actions/delete_product.php?id=${productId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchProducts(); // Refresh the product list
+                    } else {
+                        alert('Failed to delete product');
+                    }
+                })
+                .catch(error => console.error('Error deleting product:', error));
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterProducts);
+        document.getElementById('filterCategory').addEventListener('change', filterProducts);
+        document.getElementById('filterBrand').addEventListener('change', filterProducts);
+
+        // Initial population of the table and fetching brands
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchProducts();
+            fetchBrands();
+        });
 
     </script>
 </body>
-
 </html>

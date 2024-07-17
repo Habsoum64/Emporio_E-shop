@@ -21,33 +21,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
-    if ($row = mysqli_fetch_assoc($result)) {
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['user_role'] = $row['user_role'];
-            $_SESSION['user_email'] = $row['email'];
+    if (mysqli_num_rows($result) > 0) {
+        $user = mysqli_fetch_assoc($result);
+        if (password_verify($password, $user['password'])) {
+            // Password is correct, start the session
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_role'] = $user['user_role'];
+            $_SESSION['user_email'] = $user['email'];
 
-            if ($row['user_role'] == 'admin') {
-                echo '<script>
-                    alert("Login successful. Redirecting to admin dashboard.");
-                    window.location.href = "../admin_dashboard/index.html";
-                    </script>';
+            // Debugging output
+            echo "Session variables set: <br>";
+            echo "User ID: " . $_SESSION['user_id'] . "<br>";
+            echo "User Role: " . $_SESSION['user_role'] . "<br>";
+            echo "User Email: " . $_SESSION['user_email'] . "<br>";
+
+            // Redirect based on user role
+            if ($user['user_role'] == 'admin') {
+                header("Location: ../admin_dashboard/index.php");
             } else {
-                echo '<script>
-                    alert("Login successful. Redirecting to user dashboard.");
-                    window.location.href = "../user_dashboard/index.html";
-                    </script>';
+                header("Location: ../user_dashboard/index.php");
             }
+            exit();
         } else {
             echo '<script>
-                alert("Invalid password. Please try again.");
-                window.location.href = "../user_dashboard/signin.html";
+                alert("Incorrect password.");
+                window.location.href = "../user_dashboard/signin.php";
                 </script>';
         }
     } else {
         echo '<script>
-            alert("No user found with that email. Please try again.");
-            window.location.href = "../user_dashboard/signin.html";
+            alert("No user found with this email.");
+            window.location.href = "../user_dashboard/signin.php";
             </script>';
     }
 

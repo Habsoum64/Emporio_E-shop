@@ -1,3 +1,7 @@
+<?php
+include '../settings/session_check.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -178,53 +182,61 @@
             <!-- Navbar End -->
 
 
-            <!-- View Product Table Start -->
+
+            <!-- Add Product Form Start -->
             <div class="container-fluid pt-4 px-4">
-                <div class="row">
-                    <div class="col-12">
-                        <h1 class="mb-4">View Products</h1>
-                        <div class="mb-4">
-                            <input type="text" id="searchInput" class="form-control" placeholder="Search for products...">
-                        </div>
-                        <div class="mb-4">
-                            <select id="filterCategory" class="form-select" aria-label="Filter by Category">
-                                <option value="">Filter by Category</option>
-                                <option value="Fruits">Fruits</option>
-                                <option value="Vegetables">Vegetables</option>
-                                <option value="Herbs">Herbs</option>
-                                <option value="Leafy Greens">Leafy Greens</option>
-                            </select>
-                        </div>
-                        <div class="mb-4">
-                            <select id="filterBrand" class="form-select" aria-label="Filter by Brand">
-                                <option value="">Filter by Brand</option>
-                                <!-- Populate brands dynamically -->
-                            </select>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table text-start align-middle table-bordered table-hover mb-0">
-                                <thead>
-                                    <tr class="text-dark">
-                                        <th scope="col">Product ID</th>
-                                        <th scope="col">Category</th>
-                                        <th scope="col">Brand</th>
-                                        <th scope="col">Product Name</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Description</th>
-                                        <th scope="col">Keywords</th>
-                                        <th scope="col">Image</th>
-                                        <th scope="col">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="productsTableBody">
-                                    <!-- Product rows will be populated here -->
-                                </tbody>
-                            </table>
+                <div class="row g-4">
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-light text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Add New Product</h6>
+                            </div>
+                            <form action="../actions/add_product.php" method="post" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="product_cat" class="form-label">Product Category</label>
+                                    <select class="form-control" id="product_cat" name="product_cat" required>
+                                        <option value="">Select Category</option>
+                                        <option value="1">Fruits</option>
+                                        <option value="2">Vegetables</option>
+                                        <option value="3">Herbs</option>
+                                        <option value="4">Leafy Greens</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="product_brand" class="form-label">Product Brand</label>
+                                    <select class="form-control" id="product_brand" name="product_brand" required>
+                                        <option value="">Select Brand</option>
+                                        <!-- Options will be populated dynamically -->
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="product_title" class="form-label">Product Title</label>
+                                    <input type="text" class="form-control" id="product_title" name="product_title" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="product_price" class="form-label">Product Price</label>
+                                    <input type="number" class="form-control" id="product_price" name="product_price" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="product_desc" class="form-label">Product Description</label>
+                                    <textarea class="form-control" id="product_desc" name="product_desc" rows="3" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="product_keywords" class="form-label">Product Keywords</label>
+                                    <input type="text" class="form-control" id="product_keywords" name="product_keywords" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="product_image" class="form-label">Product Image</label>
+                                    <input type="file" class="form-control" id="product_image" name="product_image" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Product</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- View Product Table End -->
+            <!-- Add Product Form End -->
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -243,127 +255,23 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-    <script>
-        let allProducts = [];
-
-        function fetchProducts() {
-            return fetch('../actions/fetch_products.php')
-                .then(response => response.json())
-                .then(data => {
-                    allProducts = data;
-                    console.log("Fetched Products:", allProducts); // Log fetched products
-                    populateTable(allProducts);
-                })
-                .catch(error => console.error('Error fetching products:', error));
-        }
-
-        function fetchBrands() {
-            return fetch('../actions/fetch_brands.php')
-                .then(response => response.json())
-                .then(data => {
-                    const brandSelect = document.getElementById('filterBrand');
-                    brandSelect.innerHTML = '<option value="">Filter by Brand</option>'; // Clear existing options
-
-                    data.forEach(brand => {
-                        const option = document.createElement('option');
-                        option.value = brand.brand_name; // Assuming brand_name is used for filtering
-                        option.textContent = brand.brand_name;
-                        brandSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error fetching brands:', error));
-        }
-
-        function filterProducts() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const selectedCategory = document.getElementById('filterCategory').value.toLowerCase();
-            const selectedBrand = document.getElementById('filterBrand').value.toLowerCase();
-
-            console.log("Search Term:", searchTerm);
-            console.log("Selected Category:", selectedCategory);
-            console.log("Selected Brand:", selectedBrand);
-
-            const filteredProducts = allProducts.filter(product => {
-                const matchesSearch = product.product_title.toLowerCase().includes(searchTerm) ||
-                                    product.product_desc.toLowerCase().includes(searchTerm) ||
-                                    product.product_keywords.toLowerCase().includes(searchTerm);
-
-                const matchesCategory = selectedCategory === '' || product.category.toLowerCase() === selectedCategory;
-                const matchesBrand = selectedBrand === '' || product.brand.toLowerCase() === selectedBrand;
-
-                return matchesSearch && matchesCategory && matchesBrand;
-            });
-
-            console.log("Filtered Products:", filteredProducts);
-            populateTable(filteredProducts);
-        }
-
-        function populateTable(products) {
-            const tableBody = document.getElementById('productsTableBody');
-            tableBody.innerHTML = '';
-
-            products.forEach(product => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${product.product_id}</td>
-                    <td>${product.category}</td>
-                    <td>${product.brand}</td>
-                    <td>${product.product_title}</td>
-                    <td>${product.product_price}</td>
-                    <td>${product.product_desc}</td>
-                    <td>${product.product_keywords}</td>
-                    <td><img src="../uploads/${product.product_image}" alt="${product.product_title}" style="width: 50px;"></td>
-                    <td>
-                        <button class="btn btn-sm btn-primary edit-btn" data-id="${product.product_id}">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-btn" data-id="${product.product_id}">Delete</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-
-            // Add event listeners for edit and delete buttons
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', handleEdit);
-            });
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', handleDelete);
-            });
-        }
-
-        function handleEdit(event) {
-            const productId = event.target.dataset.id;
-            window.location.href = `edit_product.html?id=${productId}`;
-        }
-
-
-        function handleDelete(event) {
-            const productId = event.target.dataset.id;
-            if (confirm('Are you sure you want to delete this product?')) {
-                fetch(`../actions/delete_product.php?id=${productId}`, {
-                    method: 'DELETE',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        fetchProducts(); // Refresh the product list
-                    } else {
-                        alert('Failed to delete product');
-                    }
-                })
-                .catch(error => console.error('Error deleting product:', error));
-            }
-        }
-
-        document.getElementById('searchInput').addEventListener('input', filterProducts);
-        document.getElementById('filterCategory').addEventListener('change', filterProducts);
-        document.getElementById('filterBrand').addEventListener('change', filterProducts);
-
-        // Initial population of the table and fetching brands
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchProducts();
-            fetchBrands();
-        });
-
-    </script>
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch('../actions/fetch_brands.php')
+            .then(response => response.json())
+            .then(data => {
+                let brandSelect = document.getElementById('product_brand');
+                data.forEach(brand => {
+                    let option = document.createElement('option');
+                    option.value = brand.brand_id;
+                    option.textContent = brand.brand_name;
+                    brandSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching brands:', error));
+    });
+    </script>
+    
 </html>

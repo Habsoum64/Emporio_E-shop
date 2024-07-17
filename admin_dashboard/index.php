@@ -1,5 +1,11 @@
 <?php
 include '../settings/session_check.php';
+
+
+// Debugging code to verify session variables
+echo "User ID: " . $_SESSION['user_id'] . "<br>";
+echo "User Role: " . $_SESSION['user_role'] . "<br>";
+echo "User Email: " . $_SESSION['user_email'] . "<br>";
 ?>
 
 <!DOCTYPE html>

@@ -1,8 +1,12 @@
+<?php
+include '../settings/session_check.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Sign Up Page</title>
+    <title>Sign In Page</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -40,7 +44,7 @@
         </div>
         <!-- Spinner End -->
 
-        <!-- Sign Up Start -->
+        <!-- Sign In Start -->
         <div class="container-fluid">
             <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
                 <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
@@ -49,17 +53,9 @@
                             <a href="index.html" class="">
                                 <h3 class="text-primary"></i>Emporio</h3>
                             </a>
-                            <h3>Sign Up</h3>
+                            <h3>Sign In</h3>
                         </div>
-                        <form action="../actions/register_action.php" method="post">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="floatingFirstName" name="first_name" placeholder="John" required>
-                                <label for="floatingFirstName">First Name</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="floatingLastName" name="last_name" placeholder="Doe" required>
-                                <label for="floatingLastName">Last Name</label>
-                            </div>
+                        <form action="../actions/login_action.php" method="post">
                             <div class="form-floating mb-3">
                                 <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com" required>
                                 <label for="floatingInput">Email address</label>
@@ -68,21 +64,19 @@
                                 <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required>
                                 <label for="floatingPassword">Password</label>
                             </div>
-                            <div class="form-floating mb-4">
-                                <select class="form-select" id="floatingRole" name="user_role" required>
-                                    <option value="customer">Customer</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                                <label for="floatingRole">Select Role</label>
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <div class="form-check">
+                                </div>
+                                <a href="">Forgot Password</a>
                             </div>
-                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign Up</button>
+                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign In</button>
                         </form>
-                        <p class="text-center mb-0">Already have an Account? <a href="signin.html">Sign In</a></p>
+                        <p class="text-center mb-0">Don't have an Account? <a href="signup.html">Sign Up</a></p>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Sign Up End -->
+        <!-- Sign In End -->
     </div>
 
     <!-- JavaScript Libraries -->

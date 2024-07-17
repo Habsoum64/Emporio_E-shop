@@ -1,3 +1,7 @@
+<?php
+include '../settings/session_check.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -177,63 +181,51 @@
             </nav>
             <!-- Navbar End -->
 
-
-
-            <!-- Edit Product Form Start -->
+            <!-- Users Table Start -->
             <div class="container-fluid pt-4 px-4">
-                <div class="row g-4">
-                    <div class="col-sm-12 col-xl-6">
-                        <div class="bg-light text-center rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Edit Product</h6>
-                            </div>
-                            <form id="editProductForm" action="../actions/update_product.php" method="post" enctype="multipart/form-data">
-                                <input type="hidden" id="product_id" name="product_id">
-                                <div class="mb-3">
-                                    <label for="product_cat" class="form-label">Product Category</label>
-                                    <select class="form-control" id="product_cat" name="product_cat" required>
-                                        <option value="">Select Category</option>
-                                        <option value="1">Fruits</option>
-                                        <option value="2">Vegetables</option>
-                                        <option value="3">Herbs</option>
-                                        <option value="4">Leafy Greens</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="product_brand" class="form-label">Product Brand</label>
-                                    <select class="form-control" id="product_brand" name="product_brand" required>
-                                        <option value="">Select Brand</option>
-                                        <!-- Options will be populated dynamically -->
-                                    </select>
-                                </div>
+                <div class="bg-light text-center rounded p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <h6 class="mb-0">Users</h6>
+                        <a href="">Show All</a>
+                    </div>
 
-                                <div class="mb-3">
-                                    <label for="product_title" class="form-label">Product Title</label>
-                                    <input type="text" class="form-control" id="product_title" name="product_title" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="product_price" class="form-label">Product Price</label>
-                                    <input type="number" class="form-control" id="product_price" name="product_price" step="0.01" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="product_desc" class="form-label">Product Description</label>
-                                    <textarea class="form-control" id="product_desc" name="product_desc" rows="3" required></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="product_keywords" class="form-label">Product Keywords</label>
-                                    <input type="text" class="form-control" id="product_keywords" name="product_keywords" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="product_image" class="form-label">Product Image</label>
-                                    <input type="file" class="form-control" id="product_image" name="product_image">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </form>
+                    <div class="table-responsive">
+                        <table class="table text-start align-middle table-bordered table-hover mb-0">
+                            <thead>
+                                <tr class="text-dark">
+                                    <th scope="col">ID</th>
+                                    <th scope="col">First Name</th>
+                                    <th scope="col">Last Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="users"></tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Users Table End -->
+
+            <!-- Footer Start -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-light rounded-top p-4">
+                    <div class="row">
+                        <div class="col-12 col-sm-6 text-center text-sm-start">
+                            &copy; <a href="#">Your Site Name</a>, All Right Reserved.
+                        </div>
+
+                        <div class="col-12 col-sm-6 text-center text-sm-end">
+                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                            Designed By <a href="https://htmlcodex.com">HTML Codex</a>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Edit Product Form End -->
+            <!-- Footer End -->
         </div>
         <!-- Content End -->
 
@@ -253,63 +245,68 @@
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
     <!-- Template Javascript -->
-    <<!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-            
-            if (productId) {
-                fetch(`../actions/get_product_details.php?id=${productId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('product_id').value = data.product_id;
-                        document.getElementById('product_cat').value = data.product_cat;
-                        document.getElementById('product_brand').value = data.product_brand;
-                        document.getElementById('product_title').value = data.product_title;
-                        document.getElementById('product_price').value = data.product_price;
-                        document.getElementById('product_desc').value = data.product_desc;
-                        document.getElementById('product_keywords').value = data.product_keywords;
-                    })
-                    .catch(error => console.error('Error fetching product details:', error));
-
-                fetch('../actions/fetch_brands.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        const brandSelect = document.getElementById('product_brand');
-                        data.forEach(brand => {
-                            const option = document.createElement('option');
-                            option.value = brand.brand_id;
-                            option.textContent = brand.brand_name;
-                            brandSelect.appendChild(option);
+        function fetchUsers() {
+            $.ajax({
+                url: '../actions/admin_actions.php',
+                method: 'POST',
+                dataType: 'json', // Ensure the response is parsed as JSON
+                data: { action: 'fetch_users' },
+                success: function (response) {
+                    console.log('Fetch Users Response:', response);
+                    if (response.success) {
+                        const users = response.users;
+                        const usersTable = document.getElementById('users');
+                        usersTable.innerHTML = '';
+                        users.forEach(user => {
+                            usersTable.innerHTML += `
+                                <tr>
+                                    <td>${user.id}</td>
+                                    <td>${user.first_name}</td>
+                                    <td>${user.last_name}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.user_role}</td>
+                                    <td><a id='delete_user' class='btn btn-sm btn-primary' onclick='deleteUser(${user.id})'>Delete</a></td>
+                                </tr>
+                            `;
                         });
-                    })
-                    .catch(error => console.error('Error fetching brands:', error));
-            }
-
-            document.getElementById('editProductForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                
-                const formData = new FormData(event.target);
-                
-                fetch('../actions/update_product.php', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Redirect to the view products page
-                        window.location.href = 'view_products.html';
                     } else {
-                        alert('Failed to update product: ' + data.message);
+                        alert(response.message);
                     }
-                })
-                .catch(error => console.error('Error updating product:', error));
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching users:', error);
+                    alert('Failed to fetch users.');
+                }
             });
-        });
-    </script>
+        }
 
+        function deleteUser(user_id) {
+            $.ajax({
+                url: '../actions/admin_actions.php',
+                method: 'POST',
+                dataType: 'json', // Ensure the response is parsed as JSON
+                data: { action: 'delete_user', user_id: user_id },
+                success: function (response) {
+                    console.log('Delete User Response:', response);
+                    if (response.success) {
+                        fetchUsers(); // Refresh the user list after deletion
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error deleting user:', error);
+                    alert('Failed to delete user.');
+                }
+            });
+        }
+
+        // Fetch users when the page loads
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+
+    </script>
 </body>
+
 </html>

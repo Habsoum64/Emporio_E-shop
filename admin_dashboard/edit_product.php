@@ -1,3 +1,6 @@
+<?php
+include '../settings/session_check.php';
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -180,15 +183,16 @@
 
 
 
-            <!-- Add Product Form Start -->
+            <!-- Edit Product Form Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Add New Product</h6>
+                                <h6 class="mb-0">Edit Product</h6>
                             </div>
-                            <form action="../actions/add_product.php" method="post" enctype="multipart/form-data">
+                            <form id="editProductForm" action="../actions/update_product.php" method="post" enctype="multipart/form-data">
+                                <input type="hidden" id="product_id" name="product_id">
                                 <div class="mb-3">
                                     <label for="product_cat" class="form-label">Product Category</label>
                                     <select class="form-control" id="product_cat" name="product_cat" required>
@@ -225,15 +229,17 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="product_image" class="form-label">Product Image</label>
-                                    <input type="file" class="form-control" id="product_image" name="product_image" required>
+                                    <input type="file" class="form-control" id="product_image" name="product_image">
                                 </div>
-                                <button type="submit" class="btn btn-primary">Add Product</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Add Product Form End -->
+            <!-- Edit Product Form End -->
+        </div>
+        <!-- Content End -->
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -251,24 +257,63 @@
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
     <!-- Template Javascript -->
+    <<!-- Template Javascript -->
     <script src="js/main.js"></script>
-</body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            
+            if (productId) {
+                fetch(`../actions/get_product_details.php?id=${productId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('product_id').value = data.product_id;
+                        document.getElementById('product_cat').value = data.product_cat;
+                        document.getElementById('product_brand').value = data.product_brand;
+                        document.getElementById('product_title').value = data.product_title;
+                        document.getElementById('product_price').value = data.product_price;
+                        document.getElementById('product_desc').value = data.product_desc;
+                        document.getElementById('product_keywords').value = data.product_keywords;
+                    })
+                    .catch(error => console.error('Error fetching product details:', error));
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        fetch('../actions/fetch_brands.php')
-            .then(response => response.json())
-            .then(data => {
-                let brandSelect = document.getElementById('product_brand');
-                data.forEach(brand => {
-                    let option = document.createElement('option');
-                    option.value = brand.brand_id;
-                    option.textContent = brand.brand_name;
-                    brandSelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching brands:', error));
-    });
+                fetch('../actions/fetch_brands.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        const brandSelect = document.getElementById('product_brand');
+                        data.forEach(brand => {
+                            const option = document.createElement('option');
+                            option.value = brand.brand_id;
+                            option.textContent = brand.brand_name;
+                            brandSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching brands:', error));
+            }
+
+            document.getElementById('editProductForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const formData = new FormData(event.target);
+                
+                fetch('../actions/update_product.php', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect to the view products page
+                        window.location.href = 'view_products.html';
+                    } else {
+                        alert('Failed to update product: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error updating product:', error));
+            });
+        });
     </script>
-    
+
+</body>
 </html>

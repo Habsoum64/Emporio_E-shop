@@ -1,4 +1,6 @@
 <?php
+include '../settings/session_check.php';
+
 // Include session.php
 include '../settings/session.php';
 // Include connection.php
