@@ -1,5 +1,11 @@
 <?php
 include '../settings/session_check.php';
+
+
+// Debugging code to verify session variables
+echo "User ID: " . $_SESSION['user_id'] . "<br>";
+echo "User Role: " . $_SESSION['user_role'] . "<br>";
+echo "User Email: " . $_SESSION['user_email'] . "<br>";
 ?>
 
 <!DOCTYPE html>
@@ -68,9 +74,9 @@ include '../settings/session_check.php';
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-table me-2"></i>Products</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="view_products.html" class="dropdown-item">View Products</a>
-                            <a href="add_product.html" class="dropdown-item">Add Product</a>
-                            <a href="edit_product.html" class="dropdown-item">Edit Product</a>
+                            <a href="view_products.php" class="dropdown-item">View Products</a>
+                            <a href="add_product.php" class="dropdown-item">Add Product</a>
+                            <a href="edit_product.php" class="dropdown-item">Edit Product</a>
                         </div>
                     </div>
                     
@@ -78,8 +84,8 @@ include '../settings/session_check.php';
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="signin.html" class="dropdown-item">Sign In</a>
-                            <a href="signup.html" class="dropdown-item">Sign Up</a>
+                            <a href="signin.php" class="dropdown-item">Sign In</a>
+                            <a href="signup.php" class="dropdown-item">Sign Up</a>
                         </div>
                     </div>
                 </div>
@@ -180,6 +186,8 @@ include '../settings/session_check.php';
                 </div>
             </nav>
             <!-- Navbar End -->
+
+
 
 
             <!-- View Product Table Start -->
