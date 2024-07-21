@@ -1,3 +1,24 @@
+import Swal from '../lib/sweetalert2/sweetalert2.js';
+
+function checkUserType() {
+    $.ajax({
+        url: '../settings/session.php',
+        method: 'POST',
+        data: { action: 'get_user_type'},
+        success: function(response) {
+            if (JSON.parse(response) != 1) {
+                window.location.href = '../login/login.html';
+                console.log("User type: Not admin. Redirecting to Login");
+            }
+            console.log("User type: Admin. Redirecting to Login");
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching user type:', error);
+            alert('Failed to get user type.');
+        }
+    })
+}
+
 function fetchUserData() {
     $.ajax({
         url: 'admin_actions.php',
@@ -43,7 +64,7 @@ function fetchUsers() {
                         <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td>${user.user_role}</td>
-                        <td><button type="button" class="btn btn-outline-primary m-2" onClick=deleteUser(${user.id})>Delete</button></td>
+                        <td><button type="button" class="btn btn-outline-primary m-2" onclick=deleteUser(${user.id})>Delete</button></td>
                     </tr>
                 `;
             });
@@ -59,10 +80,11 @@ function deleteUser(user_id) {
     $.ajax({
         url: 'admin_actions.php',
         method: 'POST',
-        data: { action: 'delete_user', 'user_id': user_id },
+        data: { action: 'delete_user', 'uid': user_id },
         success: function (response) {
-            console.log("User deleted successfully.");
-            alert('User deleted successfully.');
+            if (JSON.parse(response) == true) {
+                console.log("User deleted successfully.");
+                alert('User deleted successfully.');}
         },
         error: function (xhr, status, error) {
             console.error('Error fetching users:', error);
@@ -166,3 +188,5 @@ function showNotification(message) {
         notification.fadeOut(500, () => notification.remove());
     }, 3000);
 }
+
+document.addEventListener('DOMContentLoaded', checkUserType);

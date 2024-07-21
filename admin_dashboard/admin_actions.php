@@ -2,11 +2,11 @@
 
 include "../settings/connection.php";
 
-function fetch_user_data($user_id) {
+function fetch_user_data($uid) {
     global $conn;
     $sql = "SELECT * FROM users WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param("i", $uid);
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->fetch_assoc();
@@ -54,12 +54,17 @@ function fetch_products() {
     echo json_encode($products);
 }
 
-function delete_user($user_id) {
+function delete_user($uid) {
     global $conn;
     $sql = "DELETE FROM users WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param("i", $uid);
     $stmt->execute();
+    if ($stmt->error == "") {
+        echo json_encode(true);
+    } else {
+        echo json_encode(false);
+    }
 }
 
 function update_order_status($order_id, $status) {
@@ -74,13 +79,13 @@ function update_order_status($order_id, $status) {
 if (isset($_POST['action'])) {
     switch ($_POST['action']) {
         case 'fetch_user_data':
-            fetch_user_data($_POST['user_id']);
+            fetch_user_data($_POST['uid']);
             break;
         case 'fetch_users':
             fetch_users();
             break;
         case 'delete_user':
-            delete_user($_POST['user_id']);
+            delete_user($_POST['uid']);
             break;
         case 'fetch_orders':
             fetch_orders();

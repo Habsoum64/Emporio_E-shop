@@ -3,7 +3,15 @@ session_start();
 
 function check_login() {
     if (!isset($_SESSION['user_id'])) {
-        header("Location: login.php");
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function redirect_to_login() {
+    if (!check_login()) {
+        header("Location: ../login/login.html");
         exit();
     }
 }
@@ -16,5 +24,6 @@ function redirect_if_logged_in() {
 }
 
 function get_user_type() {
-    return isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
+    $utype = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
+    echo json_encode($utype);
 }
