@@ -5,7 +5,7 @@ function checkUserType() {
         data: { action: 'get_user_type'},
         success: function(response) {
             if (JSON.parse(response) != 1) {
-                window.location.href = '../login/login.html';
+                window.location.href = '../login/signin.html';
                 console.log("User type: Not admin. Redirecting to Login");
             }
             console.log("User type: Admin. Redirecting to Login");
@@ -59,7 +59,7 @@ function fetchUsers() {
                 usersTable.innerHTML += `
                     <tr>
                         <td>${user.id}</td>
-                        <td>${user.name}</td>
+                        <td>${user.first_name} ${user.last_name}</td>
                         <td>${user.email}</td>
                         <td>${user.user_role}</td>
                         <td><button type="button" class="btn btn-outline-primary m-2" onclick=deleteUser(${user.id})>Delete</button></td>
@@ -118,7 +118,7 @@ function fetchProducts() {
                         <td>${product.product_price}</td>
                         <td>${product.product_desc}</td>
                         <td>${product.product_keywords}</td>
-                        <td><a class='btn btn-sm btn-primary' onclick=deleteProduct($)>Delete</a></td>
+                        <td><a class='btn btn-sm btn-primary' onclick=deleteProduct(${product.product_id})>Delete</a></td>
                     </tr>
                 `;
             });

@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
 
     $sql = "INSERT INTO users (first_name, last_name, email, password, user_role) VALUES (?, ?, ?, ?, ?)";
-    $stmt = mysqli_prepare($con, $sql);
+    $stmt = mysqli_prepare($conn, $sql);
     if (!$stmt) {
         die("MySQL prepare statement failed: " . mysqli_error($con));
     }
@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (mysqli_stmt_execute($stmt)) {
         echo '<script>
             alert("Registration successful. Please log in.");
-            window.location.href = "../user_dashboard/signin.php";
+            window.location.href = "../login/signin.html";
             </script>';
     } else {
         echo '<script>
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     mysqli_stmt_close($stmt);
-    mysqli_close($con);
+    mysqli_close($conn);
 } else {
     echo "Form not submitted.";
 }

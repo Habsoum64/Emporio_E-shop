@@ -8,7 +8,7 @@ function checkLogin() {
         data: 'check_login',
         success: function(response) {
             var result = JSON.parse(response);
-            if (result == true) {
+            if (result == 'true') {
                 return true;
             } else {
                 return false;
@@ -31,7 +31,7 @@ function login() {
                 timer: 1500
             });
 
-            window.location.href = '../login/login.html';
+            window.location.href = '../view/index.html';
         }
     })
 }
