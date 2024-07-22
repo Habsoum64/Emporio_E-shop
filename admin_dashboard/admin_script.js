@@ -1,5 +1,3 @@
-import Swal from '../lib/sweetalert2/sweetalert2.js';
-
 function checkUserType() {
     $.ajax({
         url: '../settings/session.php',
@@ -19,11 +17,11 @@ function checkUserType() {
     })
 }
 
-function fetchUserData() {
+function fetchUserData(user_id) {
     $.ajax({
         url: 'admin_actions.php',
         method: 'POST',
-        data: { action: 'fetch_user_data' },
+        data: { action: 'fetch_user_data', uid: user_id },
         success: function(response) {
             console.log('Fetched data:', response);
             const inventoryList = $('#farmerInventory');
@@ -77,19 +75,27 @@ function fetchUsers() {
 }
 
 function deleteUser(user_id) {
-    $.ajax({
-        url: 'admin_actions.php',
-        method: 'POST',
-        data: { action: 'delete_user', 'uid': user_id },
-        success: function (response) {
-            if (JSON.parse(response) == true) {
-                console.log("User deleted successfully.");
-                alert('User deleted successfully.');}
-        },
-        error: function (xhr, status, error) {
-            console.error('Error fetching users:', error);
-            alert('Failed to fetch users.');
-        }
+    Swal.fire({
+        title: "Do you really want to delete this user?",
+        showCancelButton: true,
+        confirmButtonText: "delete",
+      }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: 'admin_actions.php',
+                method: 'POST',
+                data: { action: 'delete_user', 'uid': user_id },
+                success: function (response) {
+                    if (JSON.parse(response) == true) {
+                        console.log("User deleted successfully.");
+                        alert('User deleted successfully.');}
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching users:', error);
+                    alert('Failed to fetch users.');
+                }
+            });
+        } 
     });
 }
 

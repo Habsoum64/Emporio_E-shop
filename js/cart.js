@@ -1,4 +1,4 @@
-import Swal from '../lib/sweetalert2/sweetalert2.js';
+import Swal from '/lib/sweetalert2/sweetalert2.js';
 
 function addToCart(pid, qty) {
     $.ajax({
@@ -35,7 +35,7 @@ function changeQty(pid, cmd) {
 
 function removeProduct(pid) {
     Swal.fire({
-        title: "Do you want to save the changes?",
+        title: "Do you really want to remove this product?",
         showCancelButton: true,
         confirmButtonText: "Remove",
       }).then((result) => {

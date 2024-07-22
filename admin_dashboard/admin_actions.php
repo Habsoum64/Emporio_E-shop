@@ -57,7 +57,7 @@ function fetch_products() {
         JOIN brands b ON p.product_brand = b.brand_id";
 
     $result = $conn->query($sql);
-    $products = array();
+    $products = [];
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
