@@ -5,7 +5,7 @@ function userNav() {
     const user_nav = document.getElementById("user_nav");
     if (!checkLogin()) {
         user_nav.innerHTML = `
-            <a href="../login/login.html" class="my-auto">
+            <a href="../login/signin.html" class="my-auto">
                 <i class="fas fa-power-off fa-2x"></i>
             </a>
         `;
