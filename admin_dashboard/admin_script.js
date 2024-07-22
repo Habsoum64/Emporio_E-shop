@@ -106,13 +106,13 @@ function fetchProducts() {
                 productsTable.innerHTML += `
                     <tr>
                         <td>${product.product_id}</td>
-                        <td>${product.product_cat}</td>
-                        <td>${product.product_brand}</td>
+                        <td>${product.category}</td>
+                        <td>${product.brand}</td>
                         <td>${product.product_title}</td>
                         <td>${product.product_price}</td>
                         <td>${product.product_desc}</td>
                         <td>${product.product_keywords}</td>
-                        <td><a class='btn btn-sm btn-primary' href='#'>Delete</a></td>
+                        <td><a class='btn btn-sm btn-primary' onclick=deleteProduct($)>Delete</a></td>
                     </tr>
                 `;
             });
@@ -142,8 +142,8 @@ function fetchOrders() {
                         <td>${order.order_date}</td>
                         <td>${order.order_status}</td>
                         <td>
-                            <a class='btn btn-sm btn-primary' href='#'>Confirm</a>
-                            <a class='btn btn-sm btn-primary' href='#'>Cancel</a>
+                            <a class='btn btn-sm btn-primary' onclick=updateOrderStatus('Confirmed')>Confirm</a>
+                            <a class='btn btn-sm btn-primary' onclick=updateOrderStatus('Canceled')>Cancel</a>
                         </td>
                     </tr>
                 `;
@@ -188,5 +188,3 @@ function showNotification(message) {
         notification.fadeOut(500, () => notification.remove());
     }, 3000);
 }
-
-document.addEventListener('DOMContentLoaded', checkUserType);

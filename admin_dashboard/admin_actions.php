@@ -43,14 +43,28 @@ function fetch_orders() {
 
 function fetch_products() {
     global $conn;
-    $sql = "SELECT * FROM products";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $products = [];
-    while ($row = $result->fetch_assoc()) {
-        $products[] = $row;
+    $sql = "SELECT 
+            p.product_id, 
+            c.cat_name AS category, 
+            b.brand_name AS brand, 
+            p.product_title, 
+            p.product_price, 
+            p.product_desc, 
+            p.product_keywords, 
+            p.product_image 
+        FROM products p
+        JOIN categories c ON p.product_cat = c.cat_id
+        JOIN brands b ON p.product_brand = b.brand_id";
+
+    $result = $conn->query($sql);
+    $products = array();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+        }
     }
+    
     echo json_encode($products);
 }
 
@@ -85,7 +99,7 @@ if (isset($_POST['action'])) {
             fetch_users();
             break;
         case 'delete_user':
-            delete_user($_POST['uid']);
+            delete_user(intval($_POST['uid']));
             break;
         case 'fetch_orders':
             fetch_orders();
