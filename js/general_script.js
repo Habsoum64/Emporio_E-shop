@@ -1,6 +1,3 @@
-import Swal from '../lib/sweetalert2/sweetalert2.js';
-import 'session.js';
-
 function userNav() {
     const user_nav = document.getElementById("user_nav");
     if (!checkLogin()) {

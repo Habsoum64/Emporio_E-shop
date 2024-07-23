@@ -1,5 +1,3 @@
-import Swal from '../lib/sweetalert2/sweetalert2.js';
-
 const user_id = null;
 const user_role = null;
 const user_email = null;

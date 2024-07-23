@@ -1,26 +1,3 @@
-import Swal from '/lib/sweetalert2/sweetalert2.js';
-
-function addToCart(pid, qty) {
-    $.ajax({
-        url: '../actions/cart.php',
-        method: 'POST',
-        data: {
-            'action': "add_to_cart",
-            'pid': pid,
-            'qty': qty
-        },
-        success: function() {
-            Swal.fire({
-                position: "top-end",
-                icon: "success",
-                title: "Product added to cart",
-                showConfirmButton: false,
-                timer: 1500
-            });
-        }
-    });
-}
-
 function changeQty(pid, cmd) {
     $.ajax({
         url: '../actions/cart.php',
@@ -148,6 +125,7 @@ function cartTotal(products) {
     const bill = document.getElementById("bill");
 
     bill.innerHTML = `
+    <div class="col-8"></div>
     <div class="row g-4 justify-content-end">
         <div class="col-8"></div>
         <div class="col-sm-8 col-md-7 col-lg-6 col-xl-4">
