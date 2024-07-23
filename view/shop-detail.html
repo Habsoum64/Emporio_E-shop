@@ -21,6 +21,8 @@
         <link href="../lib/lightbox/css/lightbox.min.css" rel="stylesheet">
         <link href="../lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
 
+        <!-- SweetAlert2 Stylesheet -->
+        <link href="../lib/sweetalert2/sweetalert2.css" rel="stylesheet">
 
         <!-- Customized Bootstrap Stylesheet -->
         <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -274,6 +276,9 @@
     <script src="../lib/lightbox/js/lightbox.min.js"></script>
     <script src="../lib/owlcarousel/owl.carousel.min.js"></script>
 
+    <!-- SweetAlert2 JS -->
+    <script src="../lib/sweetalert2/sweetalert2.all.min.js"></script>
+
     <!-- Template Javascript -->
     <script src="../js/main.js"></script>
     <script>
@@ -299,9 +304,9 @@
 
             if (productId) {
                 $.ajax({
-                    url: 'fetch_product.php',
+                    url: '../actions/general_actions.php',
                     method: 'POST',
-                    data: { id: productId },
+                    data: { action: get_product, id: productId },
                     success: function(response) {
                         var product = JSON.parse(response);
 
