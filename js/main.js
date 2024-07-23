@@ -126,7 +126,15 @@
 
         $('#videoModal').on('hide.bs.modal', function (e) {
             $("#video").attr('src', $videoSrc);
-        })
+        });
+
+        // Fetch and display total revenue
+        fetch('get_total_revenue.php')
+            .then(response => response.json())
+            .then(data => {
+                $('#total-sale').text(`$${data.total_revenue}`);
+            })
+            .catch(error => console.error('Error fetching total revenue:', error));
     });
 
 
@@ -148,4 +156,3 @@
     });
 
 })(jQuery);
-

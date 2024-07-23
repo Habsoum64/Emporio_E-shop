@@ -59,7 +59,7 @@ function fetchUsers() {
                 usersTable.innerHTML += `
                     <tr>
                         <td>${user.id}</td>
-                        <td>${user.name}</td>
+                        <td>${user.first_name} ${user.last_name}</td>
                         <td>${user.email}</td>
                         <td>${user.user_role}</td>
                         <td><button type="button" class="btn btn-outline-primary m-2" onclick=deleteUser(${user.id})>Delete</button></td>
@@ -186,6 +186,27 @@ function updateOrderStatus(orderId, status) {
         }
     });
 }
+
+
+function fetchTotalRevenue() {
+    $.ajax({
+        url: 'admin_actions.php', // Adjust the URL to your endpoint
+        method: 'GET', // Use GET or POST as appropriate
+        data: {action: calculate_total_revenue},
+        success: function(response) {
+            const data = JSON.parse(response);
+            $('#total-sale').text(`$${data.total_revenue}`);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching total revenue:', error);
+            alert('Failed to fetch total revenue.');
+        }
+    });
+}
+
+$(document).ready(function () {
+    fetchTotalRevenue();
+});
 
 function showNotification(message) {
     const notification = $('<div class="notification"></div>').text(message);
