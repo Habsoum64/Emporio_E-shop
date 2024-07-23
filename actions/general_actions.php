@@ -17,7 +17,7 @@ function fetch_categories() {
     $categories = [];
 
     // Fetching the categories
-    $sql = "SELECT DISTINCT product_cat FROM products ";
+    $sql = "SELECT cat_name FROM categories";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -42,10 +42,10 @@ function fetch_orders() {
 
 function fetch_products($category, $number, $sort) {
     global $conn;
-    $sql = "SELECT * FROM products, categories";
+    $sql = "SELECT * FROM products p, categories c";
     
     if ($category != "all") {
-        $sql .= " WHERE categories.cat_id = ?";
+        $sql .= " WHERE c.cat_id = ?";
     } 
     
     $filter = strval($sort);
@@ -61,9 +61,14 @@ function fetch_products($category, $number, $sort) {
     } 
 
     $sql .= " LIMIT(?)";
+    $sql .= " JOIN categories c ON p.product_cat = c.cat_id";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $category, $number);
+    if ($category != "all") {
+        $stmt->bind_param("si", $category, $number);
+    } else {
+        $stmt->bind_param("i", $number);
+    }
     $stmt->execute();
     $result = $stmt->get_result();
     $products = [];
