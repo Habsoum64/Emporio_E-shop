@@ -16,7 +16,6 @@ function fetch_categories() {
     global $conn;
     $categories = [];
 
-    // Fetching the categories
     $sql = "SELECT cat_name FROM categories";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
@@ -45,23 +44,21 @@ function fetch_products($category, $number, $sort) {
     $sql = "SELECT * FROM products p, categories c WHERE p.product_cat = c.cat_id";
     
     if ($category != "all") {
-        $sql .= "AND c.cat_id = ?";
+        $sql .= " AND c.cat_name = ?";
     }
-    
-    $filter = strval($sort);
 
-    if ($filter = "nothing") {
+    if ($sort == "nothing") {
         $sql .= " ORDER BY RAND()";
-    } elseif ($filter = "price high") {
-        $sql .= " ORDER BY p.product_price DSC";
-    } elseif ($filter = "price low") {
+    } elseif ($sort == "price high") {
+        $sql .= " ORDER BY p.product_price DESC";
+    } elseif ($sort == "price low") {
         $sql .= " ORDER BY p.product_price ASC";
-    } elseif ($filter = "name") {
-        $sql .= " ORDER BY p.product_name";
-    } 
+    } elseif ($sort == "name") {
+        $sql .= " ORDER BY p.product_title";
+    }
 
     $sql .= " LIMIT ?";
-    
+
     $stmt = $conn->prepare($sql);
     if ($category != "all") {
         $stmt->bind_param("si", $category, $number);
@@ -79,63 +76,40 @@ function fetch_products($category, $number, $sort) {
 
 function get_product($pid) {
     global $conn;
-    $sql = "SELECT * FROM products WHERE id = ?";
+    $sql = "SELECT 
+            c.cat_name AS category, 
+            b.brand_name AS brand, 
+            p.product_title, 
+            p.product_price, 
+            p.product_desc, 
+            p.product_keywords, 
+            p.product_image 
+            FROM products p 
+            JOIN categories c ON p.product_cat = c.cat_id 
+            JOIN brands b ON p.product_brand = b.brand_id 
+            WHERE p.product_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $pid);
     $stmt->execute();
     $result = $stmt->get_result();
-    $product = [];
-    while ($row = $result->fetch_assoc()) {
-        $orders[] = $row;
-    }
-    echo json_encode($orders);
+    $product = $result->fetch_assoc();
+    echo json_encode($product);
 }
 
-function search_product($pname) {
-    global $conn;
-    $sql = "SELECT * FROM products WHERE product_name LIKE '?'";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $pname);
-    
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $products = [];
-    while ($row = $result->fetch_assoc()) {
-        $products[] = $row;
-    }
-    echo json_encode($products);
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action = $_POST['action'];
 
-function update_order_status($order_id, $status) {
-    global $conn;
-    $sql = "UPDATE orders SET order_status = ? WHERE order_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $status, $order_id);
-    $stmt->execute();
-}
-
-
-if (isset($_POST['action'])) {
-    switch ($_POST['action']) {
-        case 'fetch_user_data':
-            fetch_user_data($_POST['user_id']);
-            break;
-        case 'fetch_orders':
-            fetch_orders();
-            break;
-        case 'update_order_status':
-            update_order_status($_POST['order_id'], $_POST['status']);
-            break;
-        case 'fetch_products':
-            fetch_products($_POST['category'], $_POST['number'], $_POST['sort']);
-            break;
-        case 'fetch_categories':
-            fetch_categories();
-            break;
-        case 'search_product':
-            search_product($_POST['pname']);
-            break;
+    if ($action === 'fetch_categories') {
+        fetch_categories();
+    } elseif ($action === 'fetch_orders') {
+        fetch_orders();
+    } elseif ($action === 'fetch_products') {
+        $category = $_POST['category'];
+        $number = $_POST['number'];
+        $sort = $_POST['sort'];
+        fetch_products($category, $number, $sort);
+    } elseif ($action === 'get_product') {
+        $pid = $_POST['pid'];
+        get_product($pid);
     }
 }
-
-$conn->close();
