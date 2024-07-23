@@ -13,9 +13,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     $sql = "SELECT * FROM users WHERE email = ?";
-    $stmt = mysqli_prepare($con, $sql);
+    $stmt = mysqli_prepare($conn, $sql);
     if (!$stmt) {
-        die("MySQL prepare statement failed: " . mysqli_error($con));
+        die("MySQL prepare statement failed: " . mysqli_error($conn));
     }
     mysqli_stmt_bind_param($stmt, 's', $email);
     mysqli_stmt_execute($stmt);
@@ -56,8 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     mysqli_stmt_close($stmt);
-    mysqli_close($con);
+    mysqli_close($conn);
 } else {
     echo "Form not submitted.";
 }
-?>
