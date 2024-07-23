@@ -304,9 +304,9 @@
 
             if (productId) {
                 $.ajax({
-                    url: 'fetch_product.php',
+                    url: '../actions/general_actions.php',
                     method: 'POST',
-                    data: { id: productId },
+                    data: { action: get_product, id: productId },
                     success: function(response) {
                         var product = JSON.parse(response);
 

@@ -28,6 +28,13 @@ function get_user_type() {
     echo $utype;
 }
 
+
+function get_session_vars() {
+    $session_vars = ['user_id' => $_SESSION['user_id'], 'user_role' => $_SESSION['user_role'], 'user_email' => $_SESSION['user_email']];
+    json_encode($session_vars);
+}
+
+
 if (isset($_POST['action'])) {
     switch ($_POST['action']) {
         case 'check_login':

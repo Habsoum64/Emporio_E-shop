@@ -42,26 +42,25 @@ function fetch_orders() {
 
 function fetch_products($category, $number, $sort) {
     global $conn;
-    $sql = "SELECT * FROM products p, categories c";
+    $sql = "SELECT * FROM products p, categories c WHERE p.product_cat = c.cat_id";
     
     if ($category != "all") {
-        $sql .= " WHERE c.cat_id = ?";
-    } 
+        $sql .= "AND c.cat_id = ?";
+    }
     
     $filter = strval($sort);
 
     if ($filter = "nothing") {
         $sql .= " ORDER BY RAND()";
     } elseif ($filter = "price high") {
-        $sql .= " ORDER BY product_price DSC";
+        $sql .= " ORDER BY p.product_price DSC";
     } elseif ($filter = "price low") {
-        $sql .= " ORDER BY product_price ASC";
+        $sql .= " ORDER BY p.product_price ASC";
     } elseif ($filter = "name") {
-        $sql .= " ORDER BY product_name";
+        $sql .= " ORDER BY p.product_name";
     } 
 
-    $sql .= " LIMIT(?)";
-    $sql .= " JOIN categories c ON p.product_cat = c.cat_id";
+    $sql .= " LIMIT ?";
     
     $stmt = $conn->prepare($sql);
     if ($category != "all") {
@@ -76,6 +75,20 @@ function fetch_products($category, $number, $sort) {
         $products[] = $row;
     }
     echo json_encode($products);
+}
+
+function get_product($pid) {
+    global $conn;
+    $sql = "SELECT * FROM products WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $pid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $product = [];
+    while ($row = $result->fetch_assoc()) {
+        $orders[] = $row;
+    }
+    echo json_encode($orders);
 }
 
 function search_product($pname) {
