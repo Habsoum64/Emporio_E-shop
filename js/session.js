@@ -7,7 +7,7 @@ function checkLogin() {
         method: 'POST',
         data: 'check_login',
         success: function(response) {
-            var result = JSON.parse(response);
+            var result = response;
             if (result == 'true') {
                 return true;
             } else {

@@ -4,11 +4,11 @@ function checkUserType() {
         method: 'POST',
         data: { action: 'get_user_type'},
         success: function(response) {
-            if (JSON.parse(response) != 1) {
+            if (response != 'admin') {
                 window.location.href = '../login/signin.html';
                 console.log("User type: Not admin. Redirecting to Login");
             }
-            console.log("User type: Admin. Redirecting to Login");
+            console.log("User type: Admin");
         },
         error: function(xhr, status, error) {
             console.error('Error fetching user type:', error);

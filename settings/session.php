@@ -3,9 +3,9 @@ session_start();
 
 function check_login() {
     if (!isset($_SESSION['user_id'])) {
-        json_encode('false');
+        echo 'false';
     } else {
-        json_encode('true');
+        echo 'true';
     }
 }
 
@@ -24,8 +24,8 @@ function redirect_if_logged_in() {
 }
 
 function get_user_type() {
-    $utype = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : null;
-    echo json_encode($utype);
+    $utype = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : null;
+    echo $utype;
 }
 
 if (isset($_POST['action'])) {
