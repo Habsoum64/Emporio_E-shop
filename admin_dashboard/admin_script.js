@@ -187,6 +187,27 @@ function updateOrderStatus(orderId, status) {
     });
 }
 
+
+function fetchTotalRevenue() {
+    $.ajax({
+        url: 'admin_actions.php', // Adjust the URL to your endpoint
+        method: 'GET', // Use GET or POST as appropriate
+        data: {action: calculate_total_revenue},
+        success: function(response) {
+            const data = JSON.parse(response);
+            $('#total-sale').text(`$${data.total_revenue}`);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching total revenue:', error);
+            alert('Failed to fetch total revenue.');
+        }
+    });
+}
+
+$(document).ready(function () {
+    fetchTotalRevenue();
+});
+
 function showNotification(message) {
     const notification = $('<div class="notification"></div>').text(message);
     $('body').append(notification);

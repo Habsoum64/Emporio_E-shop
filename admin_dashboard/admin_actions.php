@@ -89,28 +89,41 @@ function update_order_status($order_id, $status) {
     $stmt->execute();
 }
 
+function calculate_total_revenue() {
+    global $conn;
+    $sql = "SELECT SUM(od.qty * p.product_price) AS total_revenue
+            FROM orders_details od
+            JOIN products p ON od.product_id = p.product_id";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    echo json_encode($row);
+}
 
-if (isset($_POST['action'])) {
-    switch ($_POST['action']) {
-        case 'fetch_user_data':
-            fetch_user_data($_POST['uid']);
-            break;
-        case 'fetch_users':
-            fetch_users();
-            break;
-        case 'delete_user':
-            delete_user(intval($_POST['uid']));
-            break;
-        case 'fetch_orders':
-            fetch_orders();
-            break;
-        case 'update_order_status':
-            update_order_status($_POST['order_id'], $_POST['status']);
-            break;
-        case 'fetch_products':
-            fetch_products();
-            break;
-    }
+$action = $_POST['action'] ?? $_GET['action'] ?? '';
+
+switch ($action) {
+    case 'fetch_user_data':
+        fetch_user_data($_POST['uid']);
+        break;
+    case 'fetch_users':
+        fetch_users();
+        break;
+    case 'delete_user':
+        delete_user(intval($_POST['uid']));
+        break;
+    case 'fetch_orders':
+        fetch_orders();
+        break;
+    case 'update_order_status':
+        update_order_status($_POST['order_id'], $_POST['status']);
+        break;
+    case 'fetch_products':
+        fetch_products();
+        break;
+    case 'calculate_total_revenue':
+        calculate_total_revenue();
+        break;
 }
 
 $conn->close();
+?>
